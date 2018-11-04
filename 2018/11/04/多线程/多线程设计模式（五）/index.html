@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+
+
+  <meta name="keywords" content="多线程," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="JT" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="并行设计模式属于优化的一部分，它是对一些常用的多线程结构的总结和抽象。与串行相比，并行程序的结构通常更为复杂。因此合理的使用并行模式在多线程开发中更具有意义。 Future模式Future模式有点类似商品订单。比如网购时，当看重某一件商品时，就可以提交订单，当订单处理完成后，在家里等待商品送货上门即可。或者说更形象的我们的Ajax请求的时候，页面是异步的进行后台处理，用户无须一直等待请求结果，可以">
+<meta name="keywords" content="多线程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多线程设计模式（五）">
+<meta property="og:url" content="http://yoursite.com/2018/11/04/多线程/多线程设计模式（五）/index.html">
+<meta property="og:site_name" content="JT">
+<meta property="og:description" content="并行设计模式属于优化的一部分，它是对一些常用的多线程结构的总结和抽象。与串行相比，并行程序的结构通常更为复杂。因此合理的使用并行模式在多线程开发中更具有意义。 Future模式Future模式有点类似商品订单。比如网购时，当看重某一件商品时，就可以提交订单，当订单处理完成后，在家里等待商品送货上门即可。或者说更形象的我们的Ajax请求的时候，页面是异步的进行后台处理，用户无须一直等待请求结果，可以">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://yoursite.com/2018/11/04/多线程/util/Future.PNG">
+<meta property="og:image" content="http://yoursite.com/2018/11/04/多线程/util/master-worker.PNG">
+<meta property="og:image" content="http://yoursite.com/2018/11/04/多线程/util/master-worker2.PNG">
+<meta property="og:updated_time" content="2018-11-04T05:35:38.413Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多线程设计模式（五）">
+<meta name="twitter:description" content="并行设计模式属于优化的一部分，它是对一些常用的多线程结构的总结和抽象。与串行相比，并行程序的结构通常更为复杂。因此合理的使用并行模式在多线程开发中更具有意义。 Future模式Future模式有点类似商品订单。比如网购时，当看重某一件商品时，就可以提交订单，当订单处理完成后，在家里等待商品送货上门即可。或者说更形象的我们的Ajax请求的时候，页面是异步的进行后台处理，用户无须一直等待请求结果，可以">
+<meta name="twitter:image" content="http://yoursite.com/2018/11/04/多线程/util/Future.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/11/04/多线程/多线程设计模式（五）/"/>
+
+
+
+
+
+  <title>多线程设计模式（五） | JT</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/Dawn-JT" class="github-corner" aria-label="View source on Github">
+	<svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
+	aria-hidden="true">
+		<path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z">
+		</path>
+		<path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+		fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm">
+		</path>
+		<path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+		fill="currentColor" class="octo-body">
+		</path>
+	</svg>
+</a>
+<style>
+	.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes
+	octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media
+	(max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner
+	.octo-arm{animation:octocat-wave 560ms ease-in-out}}
+</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">JT</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">be an efficient programmer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/11/04/多线程/多线程设计模式（五）/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JT">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/images/head_portrait/dawn.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">多线程设计模式（五）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-11-04T13:30:43+08:00">
+                2018-11-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/多线程/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>并行设计模式属于优化的一部分，它是对一些常用的多线程结构的总结和抽象。与串行相比，并行程序的结构通常更为复杂。因此合理的使用并行模式在多线程开发中更具有意义。</p>
+<h2 id="Future模式"><a href="#Future模式" class="headerlink" title="Future模式"></a>Future模式</h2><p>Future模式有点类似商品订单。比如网购时，当看重某一件商品时，就可以提交订单，当订单处理完成后，在家里等待商品送货上门即可。或者说更形象的我们的Ajax请求的时候，页面是异步的进行后台处理，用户无须一直等待请求结果，可以继续浏览或操作其他内容。<br><img src="../util/Future.PNG" alt=""></p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Main</span> &#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params">String[] args</span>) </span>&#123;</span><br><span class="line">		FutureClient fc = <span class="keyword">new</span> FutureClient();</span><br><span class="line">		Data data = fc.request(<span class="string">"请求参数"</span>);</span><br><span class="line">		System.<span class="keyword">out</span>.println(<span class="string">"请求发送成功！"</span>);</span><br><span class="line">		System.<span class="keyword">out</span>.println(<span class="string">"FutureClient做其他的业务操作"</span>);</span><br><span class="line">		</span><br><span class="line">		String result = data.getRequest();</span><br><span class="line">		System.<span class="keyword">out</span>.println(result);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FutureClient</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> Data <span class="title">request</span><span class="params">(<span class="keyword">final</span> String queryStr)</span></span>&#123;</span><br><span class="line">		<span class="comment">//1.生成一个代理对象（Data接口的实现类）先返回给客户端，告诉客户端请求已经收到，客户端可以继续做其他事</span></span><br><span class="line">		<span class="keyword">final</span> FutureData futureData = <span class="keyword">new</span> FutureData();</span><br><span class="line">		<span class="comment">//2.启动一个新的线程，去加载真实的数据，并传给这个带你对象</span></span><br><span class="line">		<span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable()&#123;</span><br><span class="line">			<span class="meta">@Override</span></span><br><span class="line">			<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">				<span class="comment">//3.加载真实的数据，然后传递给代理对象</span></span><br><span class="line">				RealData realData = <span class="keyword">new</span> RealData(queryStr);</span><br><span class="line">				futureData.setRealData(realData);</span><br><span class="line">			&#125;&#125;).start();</span><br><span class="line">		<span class="keyword">return</span> futureData;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public<span class="built_in"> interface </span>Data &#123;</span><br><span class="line"></span><br><span class="line">	String getRequest();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FutureData</span> <span class="keyword">implements</span> <span class="title">Data</span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> RealData realData;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">boolean</span> isReady = <span class="keyword">false</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">synchronized</span> <span class="keyword">void</span> <span class="title">setRealData</span><span class="params">(RealData realData)</span> </span>&#123;</span><br><span class="line">		<span class="comment">//如果加载完毕，则直接返回</span></span><br><span class="line">		<span class="keyword">if</span>(isReady)&#123;</span><br><span class="line">			<span class="keyword">return</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//如果没又装载，进行装载真是对象</span></span><br><span class="line">		<span class="keyword">this</span>.realData = realData;</span><br><span class="line">		isReady = <span class="keyword">true</span>;</span><br><span class="line">		<span class="comment">//进行通知</span></span><br><span class="line">		notify();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> String <span class="title">getRequest</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		<span class="comment">//如果没装载好，程序就一直处于阻塞状态</span></span><br><span class="line">		<span class="keyword">while</span>(!isReady)&#123;</span><br><span class="line">			<span class="keyword">try</span>&#123;</span><br><span class="line">				wait();</span><br><span class="line">			&#125; <span class="keyword">catch</span> (InterruptedException e)&#123;</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="comment">//装载好之后直接返回数据即可</span></span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">this</span>.realData.getRequest();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">RealData</span> <span class="keyword"><span class="keyword">implements</span> <span class="type">Data</span></span></span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">String</span> result;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> RealData(<span class="keyword">String</span> queryStr) &#123;</span><br><span class="line">		System.out.println(<span class="string">"根据"</span> + queryStr + <span class="string">"进行查询，这是一个耗时的操作..."</span>);</span><br><span class="line">		<span class="keyword">try</span>&#123;</span><br><span class="line">			Thread.sleep(<span class="number">5000</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e)&#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		System.out.println(<span class="string">"操作完毕，获取结果"</span>);</span><br><span class="line">		result = <span class="string">"查询结果"</span>;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Override</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">String</span> getRequest() &#123;</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Master-Worker模式"><a href="#Master-Worker模式" class="headerlink" title="Master-Worker模式"></a>Master-Worker模式</h2><p>Master-Worker模式是常用的并行计算模式。它的核心思想是系统有两类进程协作工作：Master进程和Worker进程。Master负责接收和分配任务，Worker负责处理子任务。当各个Worker子进程处理完毕后，会将结果返回给Master，有Master做归纳总结。其好处就是将一个大任务分解成若干和小任务，并行执行，从而提高系统的吞吐量。<br><img src="../util/master-worker.PNG" alt="image"><br><img src="../util/master-worker2.PNG" alt="image"></p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> Main &#123;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> main(String[] args) &#123;</span><br><span class="line">		Master master = <span class="keyword">new</span> Master(<span class="keyword">new</span> Worker(), <span class="number">10</span>);</span><br><span class="line">		Random r = <span class="keyword">new</span> Random();</span><br><span class="line">		<span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++)&#123;</span><br><span class="line">			<span class="keyword">Task</span> <span class="keyword">task</span> = <span class="keyword">new</span> <span class="keyword">Task</span>();</span><br><span class="line">			<span class="keyword">task</span>.setId(i);</span><br><span class="line">			<span class="keyword">task</span>.setName(<span class="string">"任务"</span>+i);</span><br><span class="line">			<span class="keyword">task</span>.setPrice(r.nextInt(<span class="number">1000</span>));</span><br><span class="line">			master.submit(<span class="keyword">task</span>);</span><br><span class="line">		&#125;</span><br><span class="line">		master.execute();</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">long</span> start = System.currentTimeMillis();</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">while</span>(<span class="keyword">true</span>)&#123;</span><br><span class="line">			<span class="keyword">if</span>(master.isComplate())&#123;</span><br><span class="line">				<span class="keyword">long</span> end = System.currentTimeMillis();</span><br><span class="line">				<span class="keyword">int</span> ret = master.getResult();</span><br><span class="line">				System.out.<span class="keyword">println</span>(<span class="string">"执行结果 "</span> + ret + <span class="string">",执行耗时 "</span> + (end-start));</span><br><span class="line">				<span class="keyword">break</span>;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight processing"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> class Master &#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//1.声明承载任务的容器</span></span><br><span class="line">	<span class="keyword">private</span> ConcurrentLinkedQueue&lt;Task&gt; workQueue = <span class="keyword">new</span> ConcurrentLinkedQueue&lt;&gt;();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//2.使用HashMap去承载所有的Worker对象</span></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">HashMap</span>&lt;<span class="keyword">String</span>,Thread&gt; workers = <span class="keyword">new</span> <span class="keyword">HashMap</span>&lt;&gt;();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//3.使用一个容器承载每一个Worker并发执行任务的结果集</span></span><br><span class="line">	<span class="keyword">private</span> ConcurrentHashMap&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; resultMap = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;();</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//4.构造方法</span></span><br><span class="line">	<span class="keyword">public</span> Master(Worker worker,<span class="built_in">int</span> workerCount)&#123;</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//每一个Worker对象都需要有Master节点的引用，workQueue用于任务的领取，resultMap用于任务的提交</span></span><br><span class="line">		worker.setWorkQueue(<span class="keyword">this</span>.workQueue);</span><br><span class="line">		worker.setResultMap(<span class="keyword">this</span>.resultMap);</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">for</span>(<span class="built_in">int</span> i = <span class="number">0</span>; i &lt; workerCount; i++)&#123;</span><br><span class="line">			<span class="comment">//key表示每一个worker的名字，value表示线程执行对象</span></span><br><span class="line">			workers.put(<span class="string">"子节点"</span> + Integer.toString(i), <span class="keyword">new</span> Thread(worker));</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//5.提交方法</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> submit(Task task)&#123;</span><br><span class="line">		<span class="keyword">this</span>.workQueue.<span class="built_in">add</span>(task);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//6.启动worker的方法（启动应用程序，让所有的Worker工作）</span></span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> execute()&#123;</span><br><span class="line">		<span class="keyword">for</span>(Map.Entry&lt;<span class="keyword">String</span>, Thread&gt; worker : workers.entrySet())&#123;</span><br><span class="line">			worker.getValue().start();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//7.判断线程是否执行完毕</span></span><br><span class="line">	<span class="keyword">public</span> <span class="built_in">boolean</span> isComplate()&#123;</span><br><span class="line">		<span class="keyword">for</span>(Map.Entry&lt;<span class="keyword">String</span>, Thread&gt; worker : workers.entrySet())&#123;</span><br><span class="line">			<span class="keyword">if</span>(worker.getValue().getState() == Thread.State.TERMINATED)</span><br><span class="line">				<span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//8.返回结果集数据</span></span><br><span class="line">	<span class="keyword">public</span> <span class="built_in">int</span> getResult()&#123;</span><br><span class="line">		<span class="built_in">int</span> result = <span class="number">0</span>;</span><br><span class="line">		<span class="keyword">for</span>(Map.Entry&lt;<span class="keyword">String</span>, <span class="keyword">Object</span>&gt; res : resultMap.entrySet())&#123;</span><br><span class="line">			<span class="comment">//汇总逻辑</span></span><br><span class="line">			result += (Integer)res.getValue();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> result;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Task</span> &#123;</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> id;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> String name;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//getter&amp;setter...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> Worker <span class="keyword">implements</span> Runnable&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//用于接收master节点的ConcurrentLinkedQueue的引用</span></span><br><span class="line">	<span class="keyword">private</span> ConcurrentLinkedQueue&lt;Task&gt; workQueue;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">//用于接收master节点的ConcurrentHashMap的引用</span></span><br><span class="line">	<span class="keyword">private</span> ConcurrentHashMap&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; resultMap;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="built_in">void</span> setWorkQueue(ConcurrentLinkedQueue&lt;Task&gt; workQueue) &#123;</span><br><span class="line">		<span class="keyword">this</span>.workQueue = workQueue;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="keyword">public</span> <span class="built_in">void</span> setResultMap(ConcurrentHashMap&lt;<span class="built_in">String</span>, <span class="built_in">Object</span>&gt; resultMap) &#123;</span><br><span class="line">		<span class="keyword">this</span>.resultMap = resultMap;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="meta">@Override</span></span><br><span class="line">	<span class="keyword">public</span> <span class="built_in">void</span> run() &#123;</span><br><span class="line">		<span class="keyword">while</span>(<span class="literal">true</span>)&#123;</span><br><span class="line">			Task input = <span class="keyword">this</span>.workQueue.poll();</span><br><span class="line">			<span class="keyword">if</span>(<span class="literal">null</span> == input) <span class="keyword">break</span>;</span><br><span class="line">			<span class="comment">//Task处理任务逻辑</span></span><br><span class="line">			<span class="built_in">Object</span> output = handle(input); </span><br><span class="line">			<span class="keyword">this</span>.resultMap.put(Integer.toString(input.getId()), output);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">private</span> <span class="built_in">Object</span> handle(Task input) &#123;</span><br><span class="line">		<span class="built_in">Object</span> output = <span class="literal">null</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">//表示task处理业务逻辑耗时 </span></span><br><span class="line">			Thread.sleep(<span class="number">500</span>);</span><br><span class="line">			output = input.getPrice();</span><br><span class="line">		&#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">return</span> output;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/多线程/" rel="tag"><i class="fa fa-tag"></i> 多线程</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/03/多线程/Queue（四）/" rel="next" title="Queue（四）">
+                <i class="fa fa-chevron-left"></i> Queue（四）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/images/head_portrait/dawn.jpg"
+                alt="JT" />
+            
+              <p class="site-author-name" itemprop="name">JT</p>
+              <p class="site-description motion-element" itemprop="description">Tomorrow will be better</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">10</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Dawn-JT" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/8a644e6f06fb" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/shuduti" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Future模式"><span class="nav-number">1.</span> <span class="nav-text">Future模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Master-Worker模式"><span class="nav-number">2.</span> <span class="nav-text">Master-Worker模式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JT</span>
+
+  
+</div>
+<!--
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v</div>
+
+
+
+
+-->
+<div class="powered-by">
+	<i class="fa fa-user-md">
+	</i>
+	<span id="busuanzi_container_site_uv">
+		本站访客数:
+		<span id="busuanzi_value_site_uv">
+		</span>
+	</span>
+</div>
+<div class="theme-info">
+	<div class="powered-by">
+	</div>
+	<span class="post-count">
+		博客全站共18.5k字
+	</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v="></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v="></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v="></script>
+<script type="text/javascript" src="/js/src/post-details.js?v="></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v="></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
