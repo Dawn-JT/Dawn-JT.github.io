@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+
+
+  <meta name="keywords" content="Zookeeper," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="JT" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="Zookeeper简介说明Zookeeper简介什么是Zookeeper？Zookeeper是一个高效的分布式协调服务，他暴露了一些公用的服务，比如命名/配置/管理/同步控制/群服务等。我们可以使用Zookeeper来实现达成共识/集群管理/leader选举等。Zookeeper是一个高可用的分布式管理与协调框架，基于ZAB算法（原子消息广播协议）的实现。该框架能够很好地保证分布式环境中数据的一致">
+<meta name="keywords" content="Zookeeper">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zookeeper扫盲">
+<meta property="og:url" content="http://yoursite.com/2018/12/16/Zookeeper/Zookeeper扫盲/index.html">
+<meta property="og:site_name" content="JT">
+<meta property="og:description" content="Zookeeper简介说明Zookeeper简介什么是Zookeeper？Zookeeper是一个高效的分布式协调服务，他暴露了一些公用的服务，比如命名/配置/管理/同步控制/群服务等。我们可以使用Zookeeper来实现达成共识/集群管理/leader选举等。Zookeeper是一个高可用的分布式管理与协调框架，基于ZAB算法（原子消息广播协议）的实现。该框架能够很好地保证分布式环境中数据的一致">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://note.youdao.com/yws/public/resource/136732a7ed128dede53603ac633cd12b/37380FA6D290487F84C01C491F570344">
+<meta property="og:updated_time" content="2018-12-16T07:34:55.874Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Zookeeper扫盲">
+<meta name="twitter:description" content="Zookeeper简介说明Zookeeper简介什么是Zookeeper？Zookeeper是一个高效的分布式协调服务，他暴露了一些公用的服务，比如命名/配置/管理/同步控制/群服务等。我们可以使用Zookeeper来实现达成共识/集群管理/leader选举等。Zookeeper是一个高可用的分布式管理与协调框架，基于ZAB算法（原子消息广播协议）的实现。该框架能够很好地保证分布式环境中数据的一致">
+<meta name="twitter:image" content="http://note.youdao.com/yws/public/resource/136732a7ed128dede53603ac633cd12b/37380FA6D290487F84C01C491F570344">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2018/12/16/Zookeeper/Zookeeper扫盲/"/>
+
+
+
+
+
+  <title>Zookeeper扫盲 | JT</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	<a href="https://github.com/Dawn-JT" class="github-corner" aria-label="View source on Github">
+	<svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;"
+	aria-hidden="true">
+		<path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z">
+		</path>
+		<path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2"
+		fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm">
+		</path>
+		<path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z"
+		fill="currentColor" class="octo-body">
+		</path>
+	</svg>
+</a>
+<style>
+	.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes
+	octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media
+	(max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner
+	.octo-arm{animation:octocat-wave 560ms ease-in-out}}
+</style>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">JT</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">be an efficient programmer</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about" rel="section">
+            
+            关于
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2018/12/16/Zookeeper/Zookeeper扫盲/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="JT">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/uploads/images/head_portrait/dawn.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="JT">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Zookeeper扫盲</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-12-16T15:31:07+08:00">
+                2018-12-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Zookeeper/" itemprop="url" rel="index">
+                    <span itemprop="name">Zookeeper</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="Zookeeper简介说明"><a href="#Zookeeper简介说明" class="headerlink" title="Zookeeper简介说明"></a>Zookeeper简介说明</h2><h3 id="Zookeeper简介"><a href="#Zookeeper简介" class="headerlink" title="Zookeeper简介"></a>Zookeeper简介</h3><p>什么是Zookeeper？Zookeeper是一个高效的分布式协调服务，他暴露了一些公用的服务，比如命名/配置/管理/同步控制/群服务等。我们可以使用Zookeeper来实现达成共识/集群管理/leader选举等。Zookeeper是一个高可用的分布式管理与协调框架，基于ZAB算法（原子消息广播协议）的实现。该框架能够很好地保证分布式环境中数据的一致性。也正是基于这样的特性，使得Zookeeper成为了解决分布式一致性问题的利器。</p>
+<ul>
+<li><strong>顺序一致性</strong>：从一个客户端发起的事务请求，最终会严格地按照其发起的顺序被应用到Zookeeper中去。</li>
+<li><strong>原子性</strong>：所有事务请求的处理结果在整个集群中所有机器上的应用情况是一致的，也就是说，要么整个集群所有的机器都成功应用了某一事务，要么没有应用。一定不会出现部分机器应用了该事务，而另一部分没有应用的情况。</li>
+<li><strong>单一视图</strong>：无论客户端连接的是哪一个Zookeeper服务器，其看到的服务器端数据模型都是一致的。</li>
+<li><strong>可靠性</strong>：一旦服务器成功地应用了一个事务，并完成对客户端的响应，那么该事务所引起的服务端状态将会被一致保留下来。除非有另外一个事务对其更改。</li>
+<li><strong>实时性</strong>：通常所说的实时性就是指一旦事务被成功应用，那么客户端就能立刻从服务器上获取变更后的新数据，Zookeeper仅仅能保证一段时间内，客户端最终一定能从服务器端读取最新的数据状态。</li>
+</ul>
+<h3 id="Zookeeper设计目标"><a href="#Zookeeper设计目标" class="headerlink" title="Zookeeper设计目标"></a>Zookeeper设计目标</h3><ul>
+<li>目标一：简单的数据结构。Zookeeper就是以简单的树形结构来进行相互协调的（也叫树形名字空间）。</li>
+<li>目标二：可以构建集群。一般Zookeeper集群通常由一组机器构成，一般3~5台机器就可以组成一个Zookeeper集群了。只要集群中半数以上的机器能够正常工作，那么整个集群就能够正常对外提供服务。</li>
+<li>目标三：顺序访问。对于来自每一个客户端的每一个请求，Zookeeper都会分配一个全局唯一的递增编号，这个编号反应了所有事务操作的先后顺序，应用程序可以使用Zookeeper的这个特性来实现更高层次的同步。</li>
+<li>目标四：高性能。由于Zookeeper将全量数据存储在内存中，并直接服务所有的非事务请求，因此尤其是在读操作为主的场景下性能非常突出。在JMater压力测试下（100%读请求场景下），其结果大约在12-13W的QPS.</li>
+</ul>
+<h3 id="Zookeeper的结构"><a href="#Zookeeper的结构" class="headerlink" title="Zookeeper的结构"></a>Zookeeper的结构</h3><p>Zookeeper会维护一个具有层次关系的数据结构，它非常类似于一个标准的文件系统。<br><img src="http://note.youdao.com/yws/public/resource/136732a7ed128dede53603ac633cd12b/37380FA6D290487F84C01C491F570344" alt=""></p>
+<h3 id="Zookeeper的数据模型"><a href="#Zookeeper的数据模型" class="headerlink" title="Zookeeper的数据模型"></a>Zookeeper的数据模型</h3><ol>
+<li>每个子目录项如NameService都被称作为znode，这个znode是它所在的路径唯一标识，如Server1这个znode的标识为/NameService/Server1。</li>
+<li>znode可以有子节点目录，并且每个znode可以存储数据，注意EPHEMERAL类型的目录点不能有子节点目录。</li>
+<li>znode是有版本的，每个znode中存储的数据可以有多个版本，也就是一个访问路径中可以存储多份数据。</li>
+<li>znode可以是临时节点，一旦创建这个znode的客户端与服务器失去联系，这个znode也将自动删除，Zookeeper的客户端和服务器通信采用长连接方式，每个客户端和服务端通过心跳来保持连接，这个连接状态称为session，如果znode是临时节点，这个session失效，znode也就自动删除了。</li>
+<li>znode的目录名可以自动编号，如App1已结存在，再创建的话，将会自动命名为App2</li>
+<li>znode可以被监控，包括这个目录接待存储的数据的修改，子节点目录的变化等，一旦变化可以通知设置监控的客户端，这个是Zookeeper的核心特性。Zookeeper的很多特性都是基于这个特性实现的。</li>
+</ol>
+<h3 id="Zookeeper组成"><a href="#Zookeeper组成" class="headerlink" title="Zookeeper组成"></a>Zookeeper组成</h3><p>ZK server根据其身份特性分为三种：Leader，Follower，Observer。其中Follower和Observer又统称Learner（学习者）。</p>
+<ul>
+<li>Leader：负责客户端的writer类型请求。</li>
+<li>Follower：负责客户端的reader类型请求，参与Leader选举等。</li>
+<li>Observer：特殊的”Follower”，其可以接受客户端reader请求，但不参与选举（扩容系统支撑能力，提高了读取速度。因为它不接受任何同步的写入请求，只负责与Leader同步数据）。</li>
+</ul>
+<h3 id="Zookeeper应用场景"><a href="#Zookeeper应用场景" class="headerlink" title="Zookeeper应用场景"></a>Zookeeper应用场景</h3><p>Zookeeper从设计模式角度来看，是一个基于观察者模式设计的分布式服务管理框架，他负责存储和管理大家都关心的数据，然后接受观察者的注册，一旦这些数据的状态发生变化，Zookeeper就将负责通知已经在Zookeeper上注册的那些观察者做出相应的反应，从而实现几区中雷士Master/Slave管理模式。</p>
+<ul>
+<li>配置管理</li>
+<li>集群管理</li>
+<li>发布订阅</li>
+<li>数据库切换</li>
+<li>分布式日志收集</li>
+<li>分布式锁、队列管理等。</li>
+</ul>
+<h3 id="Zookeeper应用场景说明"><a href="#Zookeeper应用场景说明" class="headerlink" title="Zookeeper应用场景说明"></a>Zookeeper应用场景说明</h3><h4 id="配置管理"><a href="#配置管理" class="headerlink" title="配置管理"></a>配置管理</h4><p>配置管理在分布式环境中很常见，比如我们平时的应用系统中，经常会碰到这样的需求：如机器的配置列表、运行时的开关配置、数据库配置信息等，这些全局配置通常具备以下3个特性：</p>
+<ol>
+<li>数据量比较小。</li>
+<li>数据内容在运行时动态发生变化。</li>
+<li>集群中各个集群共享信息，配置一致。</li>
+</ol>
+<h4 id="集群管理"><a href="#集群管理" class="headerlink" title="集群管理"></a>集群管理</h4><p>Zookeeper不仅能够帮你维护当前的集群中机器的服务状态，而且能够帮你选出一个“总管”，让这个总管来管理集群，这就是Zookeeper的另一个功能Leader，并实现集群容错功能。</p>
+<ol>
+<li>希望知道当前集群中究竟有多少机器工作。</li>
+<li>对集群中每天集群的运行时状态进行数据收集。</li>
+<li>对集群中每台集群进行上下线操作。</li>
+</ol>
+<h4 id="发布订阅"><a href="#发布订阅" class="headerlink" title="发布订阅"></a>发布订阅</h4><p>Zookeeper是一个典型的发布/订阅模式的分布式数控管理与协调框架，开发人员可以使用它来进行分布式数据的发布与订阅。</p>
+<h4 id="数据库切换"><a href="#数据库切换" class="headerlink" title="数据库切换"></a>数据库切换</h4><p>比如我们初始化Zookeeper的时候读取其节点上的数据库配置文件，当配置文件一旦发生变更时，Zookeeper就能帮助我们把变更的通知发送到各个客户端，每个客户端接收到这个变更通知后，就可以从新进行最新数据的获取。</p>
+<h4 id="分布式日志收集"><a href="#分布式日志收集" class="headerlink" title="分布式日志收集"></a>分布式日志收集</h4><p>我们做一个日志系统收集集群中所有的日志信息，进行统一管理。</p>
+<h4 id="Zookeeper的特性"><a href="#Zookeeper的特性" class="headerlink" title="Zookeeper的特性"></a>Zookeeper的特性</h4><p>Zookeeper的特性就是在分布式场景下高可用，但是原生的api实现分布式功能非常困难，团队去实现也太浪费时间，即使实现了也未必稳定。那么可以采用第三方客户端完美解决，比如Curator框架，他是Apache的顶级项目。</p>
+<h4 id="ZAB协议和Paxos算法"><a href="#ZAB协议和Paxos算法" class="headerlink" title="ZAB协议和Paxos算法"></a>ZAB协议和Paxos算法</h4><p>ZAB:<a href="https://www.cnblogs.com/shangxiaofei/p/5209440.html" target="_blank" rel="noopener">https://www.cnblogs.com/shangxiaofei/p/5209440.html</a><br>paxos:<a href="https://baike.baidu.com/item/Paxos%20%E7%AE%97%E6%B3%95/10688635?fr=aladdin" target="_blank" rel="noopener">https://baike.baidu.com/item/Paxos%20%E7%AE%97%E6%B3%95/10688635?fr=aladdin</a></p>
+<h2 id="搭建Zookeeper与配置文件说明"><a href="#搭建Zookeeper与配置文件说明" class="headerlink" title="搭建Zookeeper与配置文件说明"></a>搭建Zookeeper与配置文件说明</h2><p>集群搭建参考：<a href="https://blog.csdn.net/w1764033735/article/details/78956314" target="_blank" rel="noopener">https://blog.csdn.net/w1764033735/article/details/78956314</a></p>
+<h3 id="配置文件zoo-cfg详解"><a href="#配置文件zoo-cfg详解" class="headerlink" title="配置文件zoo.cfg详解"></a>配置文件zoo.cfg详解</h3><ul>
+<li>tickTime：基本时间单元，以毫秒为单位。这个事件是作为Zookeeper服务器之间或客户端与服务器之间为此心跳的时间间隔，也就是每隔tickTime时间就会发送一个心跳。</li>
+<li>dataDir：存储内存中数据库快照的位置，顾名思义就是Zookeeper保存数据的目录，默认情况下，Zookeeper将写数据的日志文件也保存在这个目录里。</li>
+<li>clientPort：这个端口就是客户端连接Zookeeper服务端的端口，Zookeeper会监听这个端口，接收客户端的访问请求。</li>
+<li>initLimit：这个配置项是用来配置Zookeeper接收客户端初始化连接是最长能忍受多少个心跳时间间隔，当已经超过10个心跳的时间（也就是tickTime）长度后Zookeeper服务器还没有收到客户端的返回信息，那么表明这个客户端连接失败。总的时间长度就是10*2000=20秒。</li>
+<li>syncLimit：这个配置项标识Leader与Follower之间发送消息，请求和应当时间长度，最长不能超过多少个ticketTime的时间长度，总的时间长度就是5*2000=10秒。</li>
+</ul>
+<p>server.A = B:C:D</p>
+<ol>
+<li>A表示这个是第几号服务器。</li>
+<li>B表示这个服务器的ip地址。</li>
+<li>C表示的是这个服务器与集群中的Leader服务器交换信息的端口。</li>
+<li>D表示的是万一集群中的Leader服务器挂了，需要一个端口来重新进行选举，选出一个新的Leader。</li>
+</ol>
+<h2 id="java操作Zookeeper"><a href="#java操作Zookeeper" class="headerlink" title="java操作Zookeeper"></a>java操作Zookeeper</h2><p>首先要使用java操作Zookeeper，Zookeeper的java client使我们更轻松的区对Zookeeper进行各种操作，我们引入Zookeeper-3.X.X.jar和zkclient-0.X.jar即可。Zookeeper-3.X.X.jar为官方提供的java api，zkclient-0.X.jar则为在原生api基础之上进行扩展的开源java客户端。</p>
+<p>创建会话方法：客户端可以通过创建一个Zookeeper实例来连接Zookeeper服务器。</p>
+<p>Zookeeper(Arguments)方法（一个四个构造方法，根据参数不同）：</p>
+<ul>
+<li>connectString：连接服务器列表。</li>
+<li>sessionTimeout：心跳检测时间周期（毫秒）。</li>
+<li>wather：时间处理通知器。</li>
+<li>canBeReadOlhy：表示当前会话是否支持只读。</li>
+<li>sessionId和sessionPassword：提供连接Zookeeper的sessionId和密码，通过这两个确定绑定唯一一台客户端，目的是可以提供重复会话。</li>
+</ul>
+<p>注意：Zookeeper客户端和服务器端会话的建立是一个异步的过程，也就是说在程序中，我们程序方法在处理完客户端初始化后立即返回（也就是说程序往下执行代码，这样，大多数情况下我们并没有真正构建好一个可用会话，在会话的生命周期处于”CONNECTING”时才算真正建立完毕，所以我们需要使用多线程中所学习的一个小工具类）。</p>
+<figure class="highlight cs"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">ZookeeperBase</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/** zookeeper地址 */</span></span><br><span class="line">    <span class="keyword">static</span> final String CONNECT_ADDR = <span class="string">"192.168.0.4:2181,192.168.0.5:2181,192.168.0.6:2181"</span>;</span><br><span class="line">    <span class="comment">/** session超时时间 */</span></span><br><span class="line">    <span class="keyword">static</span> final <span class="keyword">int</span> SESSION_OUTTIME = <span class="number">2000</span>;<span class="comment">//ms </span></span><br><span class="line">    <span class="comment">/** 信号量，阻塞程序执行，用于等待zookeeper连接成功，发送成功信号 */</span></span><br><span class="line">    <span class="keyword">static</span> final CountDownLatch connectedSemaphore = <span class="keyword">new</span> CountDownLatch(<span class="number">1</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span>(<span class="params">String[] args</span>) throws Exception</span>&#123;</span><br><span class="line">        </span><br><span class="line">        ZooKeeper zk = <span class="keyword">new</span> ZooKeeper(CONNECT_ADDR, SESSION_OUTTIME, <span class="keyword">new</span> Watcher()&#123;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span>(<span class="params">WatchedEvent <span class="keyword">event</span></span>) </span>&#123;</span><br><span class="line">                <span class="comment">//获取事件的状态</span></span><br><span class="line">                KeeperState keeperState = <span class="keyword">event</span>.getState();</span><br><span class="line">                EventType eventType = <span class="keyword">event</span>.getType();</span><br><span class="line">                <span class="comment">//如果是建立连接</span></span><br><span class="line">                <span class="keyword">if</span>(KeeperState.SyncConnected == keeperState)&#123;</span><br><span class="line">                    <span class="keyword">if</span>(EventType.None == eventType)&#123;</span><br><span class="line">                        <span class="comment">//如果建立连接成功，则发送信号量，让后续阻塞程序向下执行</span></span><br><span class="line">                        connectedSemaphore.countDown();</span><br><span class="line">                        System.<span class="keyword">out</span>.println(<span class="string">"zk 建立连接"</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//进行阻塞</span></span><br><span class="line">        connectedSemaphore.<span class="keyword">await</span>();</span><br><span class="line">        </span><br><span class="line">        System.<span class="keyword">out</span>.println(<span class="string">".."</span>);</span><br><span class="line">        <span class="comment">//创建父节点</span></span><br><span class="line">        <span class="comment">//zk.create("/testRoot", "testRoot".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//创建子节点</span></span><br><span class="line"><span class="comment">//        String ret = zk.create("/testRoot/children", "children data".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.PERSISTENT);</span></span><br><span class="line"><span class="comment">//        System.out.println("创建子节点"+ret);</span></span><br><span class="line">        <span class="comment">//获取节点洗信息</span></span><br><span class="line">        <span class="comment">/*byte[] data = zk.getData("/testRoot", false, null);</span></span><br><span class="line"><span class="comment">        System.out.println(new String(data));</span></span><br><span class="line"><span class="comment">        System.out.println(zk.getChildren("/testRoot", false));*/</span></span><br><span class="line">        </span><br><span class="line">        <span class="comment">//修改节点的值</span></span><br><span class="line"><span class="comment">/*        zk.setData("/testRoot", "modify data root".getBytes(), -1);</span></span><br><span class="line"><span class="comment">        byte[] data = zk.getData("/testRoot", false, null);</span></span><br><span class="line"><span class="comment">        System.out.println(new String(data));    */</span>    </span><br><span class="line">        </span><br><span class="line">        <span class="comment">//判断节点是否存在</span></span><br><span class="line"><span class="comment">//        System.out.println(zk.exists("/testRoot/children", false));</span></span><br><span class="line">        <span class="comment">//同步删除节点</span></span><br><span class="line">        zk.delete(<span class="string">"/testRoot/children"</span>, <span class="number">-1</span>);   </span><br><span class="line">        <span class="comment">//异步删除节点</span></span><br><span class="line">        zk.delete(<span class="string">"/testRoot/children"</span>, <span class="number">-1</span>, <span class="keyword">new</span> AsyncCallback.VoidCallback() &#123;</span><br><span class="line">            @Override</span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">processResult</span>(<span class="params"><span class="keyword">int</span> rc, String path, Object ctx</span>) </span>&#123;</span><br><span class="line">                System.<span class="keyword">out</span>.println(<span class="string">"rc====="</span>+rc);</span><br><span class="line">                System.<span class="keyword">out</span>.println(<span class="string">"path======"</span>+path);</span><br><span class="line">                System.<span class="keyword">out</span>.println(<span class="string">"ctc======"</span>+path);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; , <span class="string">"回调值"</span>);</span><br><span class="line"><span class="comment">//        System.out.println(zk.exists("/testRoot/children", false));</span></span><br><span class="line">        </span><br><span class="line">        zk.close();</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="创建节点"><a href="#创建节点" class="headerlink" title="创建节点"></a>创建节点</h3><p>创建节点（znode）方法：create（），提供了两套创建节点的方法，同步和异步创建节点方式。同步方式：</p>
+<ul>
+<li>参数1，节点路径（名称）：/nodeName（不允许递归创建节点，也就说在父节点不存在的情况下，不允许创建子节点）。</li>
+<li>参数2，节点内容：要求类型是字节数组（也就是说，不支持序列化方式，如果需要实现序列化，可使用java相关序列化框架，如Hessian、Kryo框架）。</li>
+<li>参数3，节点权限：使用Ids.OPEN_ACL_UNSAFE开放权限即可（这个参数一般在权限没有太高要求的场景下，没必要关注）。</li>
+<li>参数4，节点类型：创建爱你节点类型：CreateMode.*，提供四种节点类型PERSISTEN(持久节点)，PERSISTEN_SEQUENTIAL(持久顺序节点)，EPHEMERAL(临时节点)，EPHEMERAL_SEQUENTIAL(临时顺序节点)。</li>
+</ul>
+<p>异步方式：（在同步的基础上增加两个参数）</p>
+<ul>
+<li>参数5：注册一个异步回调函数，要实现AsynCallBack.StringCallBack接口，重写processResult(int rc,String path,Object ctx,String name)方法，当节点创建完毕以后执行此方法。rc：为服务端响应码，-表示调用成功、-4表示端口连接、-110表示指定节点存在、-112表示会话已经过期。path：接口调用时传入API的数据节点的路径参数。ctx：为调用接口传入API的ctx值。name：实际在服务器端创建节点的名称。</li>
+<li>参数6：传递给回调函数的参数，一般为上下文（Context）信息。</li>
+</ul>
+<h3 id="删除节点"><a href="#删除节点" class="headerlink" title="删除节点"></a>删除节点</h3><p>删除节点：delete方法（api提供了两个接口，同步删除和异步删除方法）。同步方式：</p>
+<ul>
+<li>参数1：节点名称/deletePath。</li>
+<li>参数2：版本号，即表明本次删除操作是针对该数据的某个版本进行的操作。</li>
+</ul>
+<p>异步方式（和create方法一致）：</p>
+<ul>
+<li>参数3：一个异步回调函数。</li>
+<li>参数4：用于传递上下文信息的对象。</li>
+</ul>
+<p>注意：Zookeeper中，只允许删除叶子节点信息，也就是说如果当前节点不是叶子节点则无法删除，或必须先删除其下所有子节点。</p>
+<h3 id="getChildren读取数据方法"><a href="#getChildren读取数据方法" class="headerlink" title="getChildren读取数据方法"></a>getChildren读取数据方法</h3><p>getChildren读取数据方法：包括子节点列表的获取和子节点数据的获取。</p>
+<ul>
+<li>参数1：path：获取指定节点下的数据（获取子节点列表）。</li>
+<li>参数2：watcher：注册的watcher，一旦在本次子节点获取后，子节点列表发生变更的话，那么就会向客户端发送通知。该参数允许为null。</li>
+<li>参数3：wath：表明是否需要注册一个watcher，如果为true，则会使用到Zookeeper客户端上下文中提到的那么默认watcher。如果为false，则表明不需要注册watcer。</li>
+<li>参数4：cb：回调函数。</li>
+<li>参数5：ctx：上下文信息对象。</li>
+<li>参数6：stat：指定数据节点的节点状态信息。</li>
+</ul>
+<p>注意：当我们获取指定节点的子节点列表后，还需要订阅这个子节点列表的变化通知，这时候就可以通过注册一个watcher来实现，当子节点被添加或删除是，服务器就会触发一个“NodeChildrenChanged”类型的事件通知，需要注意的是服务端发送给客户端的事件通知中，是不包含最新的节点列表的，客户端必须主动从新进行获取，通常在客户端收到这个事件通知后，就可以再次主动获取最新的子节点列表了。也就是说，zookeeper服务端在向客户端发送watcher“NodeChildrenChanged”事件通知的时候，仅仅只发一个通知，不会把节点变化情况发送给客户端，需要客户端自己重新获取，另外watcher通知是一次性的，即触发失效，因此客户端需要反复注册watcher才行。</p>
+<h3 id="exists方法"><a href="#exists方法" class="headerlink" title="exists方法"></a>exists方法</h3><p>exists方法：检测节点是否存在。</p>
+<ul>
+<li>参数1：path：路径。</li>
+<li>参数2：watcher：注册的watcher对象。一旦之后节点内容发生biang，则会向客户端发送通知，该参数允许为null（用于三类事件监听：节点的创建、删除、更新）。</li>
+<li>参数3：watch：是否使用watcher，如果为true则使用默认上下文的watcher，false则不使用watcher。</li>
+<li>参数4：cb：回调函数。</li>
+<li>参数5：ctx：用于传递的上下文信息对象。</li>
+</ul>
+<p>注意：exists方法意义在于无论节点是否存在，都可以进行注册watcher，能够对节点的创建、删除和修改改进进行监听，但是其子节点发送各种变化，都不会通知客户端。</p>
+<h3 id="Watcher、ZK状态、事件类型"><a href="#Watcher、ZK状态、事件类型" class="headerlink" title="Watcher、ZK状态、事件类型"></a>Watcher、ZK状态、事件类型</h3><p>Zookeeper有watch事件，是一次性触发的，当watch监视的数据发生变化是，通知设置了该watch的client，即watcher。同样，其watcher是监听数据发送了某些变化，那就一定会有对应的事件类型和状态类型。</p>
+<p>事件类型（znode节点相关的）：</p>
+<ul>
+<li>EventType.NodeCreated</li>
+<li>EventType.NodeDataChanged</li>
+<li>EventType.NodeChildrenChanged</li>
+<li>EventType.NodeDeleted</li>
+</ul>
+<p>状态类型（是跟客户端实例相关的）：</p>
+<ul>
+<li>KeeperState.Disconnected</li>
+<li>KeeperState.SyncConnected</li>
+<li>KeeperState.AuthFailed</li>
+<li>KeeperState.Expired</li>
+</ul>
+<p>watchcer的特性：一次性、客户端串行执行、轻量。</p>
+<ul>
+<li>一次性：对于K的watcher，你只需要记住一点，Zookeeper有watch时间，是一次性触发的，当watch监视的数据发生变化时，通知设置了该watch的client，即watcher，由于Zookeeper的监控都是一次性的，所有每次必须设置监控。</li>
+<li>客户端串行执行：客户端Wather回调的过程是一个串行同步的过程，这为我们保证了顺序，同时需要开发人员注意一点，千万不要因为一个Watcher的处理逻辑影响了整个客户端的Watcher回调。</li>
+<li>轻量：WatcherEvent是Zookeeper整个Watcher通知机制的最小通知单元，整个通知机制只包含三部分：通知状态、时间类型和节点路径。也就是说Watcher通知非常的简单，只会告诉客户端发生了时间而不会告知其具体内容，需要客户自己去进行获取，比如NodeDataChanged事件，Zookeeper会通知客户端指定节点的数据发生了变更，而不会直接提供具体的数据内容。</li>
+</ul>
+<h3 id="Zookeeper的ACL"><a href="#Zookeeper的ACL" class="headerlink" title="Zookeeper的ACL"></a>Zookeeper的ACL</h3><p>ACL（Access Control List），Zookeeper作为一个分布式协调框架，其内部存储的都是一些关乎分布式系统运行时状态的元数据，尤其是涉及到一些分布式锁、Master选举和协调等应用场景。我们需要有效地保障Zookeeper的数据安全，Zookeeper提供了一套ACL权限控制机制来保障数据安全，包括权限模式、授权模式、权限。</p>
+<h2 id="zkClient客户端"><a href="#zkClient客户端" class="headerlink" title="zkClient客户端"></a>zkClient客户端</h2><h3 id="zkClient使用"><a href="#zkClient使用" class="headerlink" title="zkClient使用"></a>zkClient使用</h3><p>ZKClient是在原生的API接口基础上进行了封装，简化了ZK的复杂性。</p>
+<p>1 创建客户端方法：ZKClient(Arguments)</p>
+<ul>
+<li>参数1：zkServers zookeeper服务器的地址，用“,”分割。</li>
+<li>参数2：sessionTimeout超时会话，为毫秒，默认为30000ms。</li>
+<li>参数3：connectionTimeout连接超时会话。</li>
+<li>参数4：IZkConnection接口实现类。</li>
+<li>参数5：zkSerializar自定义序列化实现。</li>
+</ul>
+<p>2 创建节点方法：<br>create、createEphemeral、createEphemeralSequential、createPersistent、createPersistentSequential。</p>
+<ul>
+<li>参数1：path，路径。</li>
+<li>参数2：data，数据内容，可以传入null。</li>
+<li>参数3：mode，节点类型，为一个枚举类型，4中形式。</li>
+<li>参数4：aci策略。</li>
+<li>参数5：callback回调函数。</li>
+<li>参数6：context上下文对象。</li>
+<li>参数7：createParents是否创建父节点。</li>
+</ul>
+<p>3 删除节点方法：delete、deleteRecursive</p>
+<ul>
+<li>参数1：path路径。</li>
+<li>参数2：callback回调函数。</li>
+<li>参数3：context上下文对象。</li>
+</ul>
+<p>4 读取子节点数据方法：getChildren</p>
+<ul>
+<li>参数1：path路径。</li>
+</ul>
+<p>5 读取节点数据方法：readData</p>
+<ul>
+<li>参数1：path路径。</li>
+<li>参数2：returnNullfPathNotExis(避免为空节点抛出异常，直接返回null)。</li>
+<li>参数3：节点状态。</li>
+</ul>
+<p>6 更新数据方法：writeData</p>
+<ul>
+<li>参数1：path路径。</li>
+<li>参数2：data数据信息。</li>
+<li>参数3：version版本号。</li>
+</ul>
+<p>7 检测节点是否存在方法：exists</p>
+<ul>
+<li>参数1：path路径。</li>
+</ul>
+<p>我们发现，上述ZKClient里面并没有类似的watcher、watch参数，这也就是说开发人员无需关系反复注册Watcher的问题，ZKClient给我们提供了一套监听方式，我们可以使用监听节点的方式进行操作，剔除了繁琐的反复watcher操作，简化了代码的复杂程度。</p>
+<p>8 subscribeChildChanges方法：</p>
+<ul>
+<li>参数1：path路径。</li>
+<li>参数2：实现了IZkChildListener接口的类（如：实例化IZkChildListener类），只需要重写其handleChildChanges(String parentPath,List<string> currentChilds)方法。其中参数parentPath为所监听节点全路径，currentChilds为最新的自己诶单列表（相对路径）。IZkChildListener事件说明正对于下面三个事件触发：新增子节点、减少子节点、删除子节点。</string></li>
+</ul>
+<p>9 subscribeDataChanges方法：（监听节点数据变化）</p>
+<ul>
+<li>参数1：path路径。</li>
+<li>参数2：实现了IZkDataListener接口的类，需要重新handleDataDeleted(String path)方法（节点删除时触发）和handleDataChanges(String path, Object data)方法（节点数据改变时触发）。</li>
+</ul>
+<p>通过之前的方法我们发现，其IZkChildListener有以下特点：</p>
+<ol>
+<li>客户端可以对一个不存在的节点进行变更的监听。</li>
+<li>一旦客户端对一个节点注册了子节点列表变更监听后，那么当前节点的子节点列表发送变更的时候，服务端都会通知客户端，并将最新的子节点列表发送给客户端。</li>
+<li>该节点本身创建或删除也会通知到客户端。</li>
+<li>另外最重要的是这个监听是一直存在的，不是单次监听，相比原生API提供的要简单的多。</li>
+</ol>
+<h2 id="Curator框架"><a href="#Curator框架" class="headerlink" title="Curator框架"></a>Curator框架</h2><p>为了更好的实现java操作zookeeper服务器，后来出现Curator框架，非常强大，目前已经是Apache的顶级项目，里面提供了更多丰富的操作，例如session超时重连、主从选举、分布式计数器、分布式锁等等使用与各种复杂的Zookeeper场景的API封装。</p>
+<h3 id="Curator框架使用"><a href="#Curator框架使用" class="headerlink" title="Curator框架使用"></a>Curator框架使用</h3><p>Curator框架中使用链式编程风格，易读性强，使用工厂方法创建连接对象。</p>
+<p>1 使用CuratorFrameworkFactory的两个静态工厂方法（参数不同）来实现：</p>
+<ul>
+<li>参数1：connectString，连接串。</li>
+<li>参数2：retryPolicy，重试连接策略，有四种实现，分别为：ExponentialBackoffRetry、RetryNTimes、RetryOneTimes、RetryUntilElapsed。</li>
+<li>参数3：sesseionTimeoutMs会话超时时间，默认为60000ms。</li>
+<li>参数4：connectionTimeoutMs连接超时时间，默认为15000ms。</li>
+</ul>
+<p>2 创建节点create方法，可选链式项：<br>creatingParentsIfNeeded、withMode、forPath、withACL等。</p>
+<p>3 删除节点delete方法，可选链式项：<br>deletingChildrenIfNeeded、guaranteed、withVersion、forPath等。</p>
+<p>4 读取和修改数据getData、setData方法。</p>
+<p>5 异步绑定回调方法，比如创建节点时绑定一个回调函数，该回调函数可以输出服务器的状态码以及服务器事件类型。还可以加入一个线程池进行优化操作。</p>
+<p>6 读取子节点方法getChildren。</p>
+<p>7 判断节点是否存在方法checkExists。<br>注意：对于retryPolicy策略通过一个接口来让用户自定义实现。</p>
+<h3 id="Curator的监听"><a href="#Curator的监听" class="headerlink" title="Curator的监听"></a>Curator的监听</h3><p>如果要使用类似Wather的监听功能Curator必须依赖一个jar包，Maven依赖：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.curator<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>curator-recipes<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>x.x.x<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>有了这个依赖包，我们使用NodeCache的方式去客户端实例中注册一个监听缓存，然后实现对应的监听方法即可，这里我们主要有两种监听方式：</p>
+<ul>
+<li>NodeCacheListener：监听节点的新增、修改操作。</li>
+<li>PathChildrenCacheListener：监听子节点的新增、修改、删除操作。</li>
+</ul>
+<h3 id="Curator应用场景"><a href="#Curator应用场景" class="headerlink" title="Curator应用场景"></a>Curator应用场景</h3><ul>
+<li>分布式锁功能：在分布式场景中，我们为了保证数据的一致性，经常在程序运行的某一个点需要进行同步操作（java可提供synchronized或者ReentrantLock实现）。因为我们之前所有的是在高并发下访问一个程序，现在我们则是在高并发下访问多个服务器节点（分布式）。我们使用Curator基于Zookeeper的特性提供的分布式锁来处理分布式场景的数据一致性，Zookeeper本身的分布式有点问题，这里强烈推荐使用Curator的分布式锁（InterProcessMutex）。</li>
+<li>分布式计数器功能：一说到分布式计数器，你可能脑海中想到了AtomicInteger这种经典的方式，如果针对一个JVM的场景当然没有问题，但是在分布式场景下就需要利用Curator框架的DistributedAtomicInteger了。</li>
+<li>分布式线程屏障：DistributedBarrir方式(被动等待屏障释放)：同一个jvm中使用的是CyclicBarrier,在分布式情况下curator封装了DistributedBarrir。主要是每个客户端zk实例使用相同的节点创建DistributedBarrir来使用同一个屏障达到跨jvm的线程屏障功能。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+	
+	<div>
+	  
+		<div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+	  
+	</div>
+	
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Zookeeper/" rel="tag"><i class="fa fa-tag"></i> Zookeeper</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/11/29/JVM/JVM基本概念/" rel="next" title="JVM-基本概念">
+                <i class="fa fa-chevron-left"></i> JVM-基本概念
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/uploads/images/head_portrait/dawn.jpg"
+                alt="JT" />
+            
+              <p class="site-author-name" itemprop="name">JT</p>
+              <p class="site-description motion-element" itemprop="description">Tomorrow will be better</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">9</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="https://github.com/Dawn-JT" target="_blank" title="GitHub">
+                      
+                        <i class="fa fa-fw fa-globe"></i>GitHub</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://www.jianshu.com/u/8a644e6f06fb" target="_blank" title="简书">
+                      
+                        <i class="fa fa-fw fa-globe"></i>简书</a>
+                  </span>
+                
+                  <span class="links-of-author-item">
+                    <a href="https://blog.csdn.net/shuduti" target="_blank" title="CSDN">
+                      
+                        <i class="fa fa-fw fa-globe"></i>CSDN</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Zookeeper简介说明"><span class="nav-number">1.</span> <span class="nav-text">Zookeeper简介说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper简介"><span class="nav-number">1.1.</span> <span class="nav-text">Zookeeper简介</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper设计目标"><span class="nav-number">1.2.</span> <span class="nav-text">Zookeeper设计目标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper的结构"><span class="nav-number">1.3.</span> <span class="nav-text">Zookeeper的结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper的数据模型"><span class="nav-number">1.4.</span> <span class="nav-text">Zookeeper的数据模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper组成"><span class="nav-number">1.5.</span> <span class="nav-text">Zookeeper组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper应用场景"><span class="nav-number">1.6.</span> <span class="nav-text">Zookeeper应用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper应用场景说明"><span class="nav-number">1.7.</span> <span class="nav-text">Zookeeper应用场景说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置管理"><span class="nav-number">1.7.1.</span> <span class="nav-text">配置管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#集群管理"><span class="nav-number">1.7.2.</span> <span class="nav-text">集群管理</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#发布订阅"><span class="nav-number">1.7.3.</span> <span class="nav-text">发布订阅</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#数据库切换"><span class="nav-number">1.7.4.</span> <span class="nav-text">数据库切换</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#分布式日志收集"><span class="nav-number">1.7.5.</span> <span class="nav-text">分布式日志收集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Zookeeper的特性"><span class="nav-number">1.7.6.</span> <span class="nav-text">Zookeeper的特性</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ZAB协议和Paxos算法"><span class="nav-number">1.7.7.</span> <span class="nav-text">ZAB协议和Paxos算法</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#搭建Zookeeper与配置文件说明"><span class="nav-number">2.</span> <span class="nav-text">搭建Zookeeper与配置文件说明</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件zoo-cfg详解"><span class="nav-number">2.1.</span> <span class="nav-text">配置文件zoo.cfg详解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#java操作Zookeeper"><span class="nav-number">3.</span> <span class="nav-text">java操作Zookeeper</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建节点"><span class="nav-number">3.1.</span> <span class="nav-text">创建节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#删除节点"><span class="nav-number">3.2.</span> <span class="nav-text">删除节点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#getChildren读取数据方法"><span class="nav-number">3.3.</span> <span class="nav-text">getChildren读取数据方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#exists方法"><span class="nav-number">3.4.</span> <span class="nav-text">exists方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Watcher、ZK状态、事件类型"><span class="nav-number">3.5.</span> <span class="nav-text">Watcher、ZK状态、事件类型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Zookeeper的ACL"><span class="nav-number">3.6.</span> <span class="nav-text">Zookeeper的ACL</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#zkClient客户端"><span class="nav-number">4.</span> <span class="nav-text">zkClient客户端</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#zkClient使用"><span class="nav-number">4.1.</span> <span class="nav-text">zkClient使用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Curator框架"><span class="nav-number">5.</span> <span class="nav-text">Curator框架</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Curator框架使用"><span class="nav-number">5.1.</span> <span class="nav-text">Curator框架使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Curator的监听"><span class="nav-number">5.2.</span> <span class="nav-text">Curator的监听</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Curator应用场景"><span class="nav-number">5.3.</span> <span class="nav-text">Curator应用场景</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; 2017 &mdash; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">JT</span>
+
+  
+</div>
+<!--
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v</div>
+
+
+
+
+-->
+<div class="powered-by">
+	<i class="fa fa-user-md">
+	</i>
+	<span id="busuanzi_container_site_uv">
+		本站访客数:
+		<span id="busuanzi_value_site_uv">
+		</span>
+	</span>
+</div>
+<div class="theme-info">
+	<div class="powered-by">
+	</div>
+	<span class="post-count">
+		博客全站共50.3k字
+	</span>
+</div>
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v="></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v="></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v="></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v="></script>
+<script type="text/javascript" src="/js/src/post-details.js?v="></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v="></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+</body>
+</html>
+<script type="text/javascript" src="/js/src/love.js"></script>
